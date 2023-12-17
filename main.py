@@ -5,17 +5,19 @@ dto = DTO()
 data = HandlerCSV.read_csv('dataset.csv')
 
 
-def table_insert(table_name, column_name):
-    table_data = {
-        'table_name': f'{str(table_name).capitalize()}',
-        'seq_name': f'SEQ_{str(table_name).upper()}'
-    }
-    dto.insert(table_data, data[f'{column_name}'])
+def episode():
+    for row in data['Title']:
+        dto.insert_episode(row)
 
 
 def director():
     for row in data['Directed by']:
         dto.insert_director(row)
+
+
+def season():
+    for row in data['Season']:
+        dto.insert_season(row)
 
 
 def format_time():
@@ -37,8 +39,8 @@ def exhibition():
         dto.insert_exhibition(episode_id, director_id, time_id, season_id, viewers)
 
 
-table_insert('episode', 'Title')
-table_insert('season', 'Season')
+episode()
 director()
+season()
 format_time()
 exhibition()

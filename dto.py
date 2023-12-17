@@ -7,16 +7,17 @@ class DTO:
     def __init__(self):
         self.db_conn = DAO.get_connection()
 
-    def insert(self, table_data, data):
-        old_data = ''
-        for row_data in data:
-            str_data = str(row_data).replace('"', '')
-            if str_data == old_data:
-                continue
-            sql = f"INSERT INTO {table_data['table_name']} VALUES ({table_data['seq_name']}.nextval, '{str_data}')"
-            self.db_conn.cursor().execute(sql)
+    def insert_episode(self, episode_name):
+        str_episode = episode_name.replace('"', '')
+        sql_select = f"SELECT COUNT(*) FROM EPISODE WHERE NAME='{str_episode}'"
+        cursor = self.db_conn.cursor().execute(sql_select)
+        result = cursor.fetchone()[0]
+        if result > 0:
+            return
+        else:
+            sql_insert = f"INSERT INTO EPISODE VALUES (SEQ_EPISODE.nextval, '{str_episode}')"
+            self.db_conn.cursor().execute(sql_insert)
             self.db_conn.commit()
-            old_data = str_data
 
     def insert_director(self, director_name):
         sql_select = f"SELECT COUNT(*) FROM DIRECTOR WHERE NAME='{director_name}'"
@@ -29,6 +30,17 @@ class DTO:
             self.db_conn.cursor().execute(sql_insert)
             self.db_conn.commit()
 
+    def insert_season(self, season):
+        sql_select = f"SELECT COUNT(*) FROM SEASON WHERE NAME='{season}'"
+        cursor = self.db_conn.cursor().execute(sql_select)
+        result = cursor.fetchone()[0]
+        if result > 0:
+            return
+        else:
+            sql_insert = f"INSERT INTO SEASON VALUES (SEQ_DIRECTOR.nextval, '{season}')"
+            self.db_conn.cursor().execute(sql_insert)
+            self.db_conn.commit()
+
     def insert_time(self, year, month):
         sql_select = f"SELECT COUNT(*) FROM TIME WHERE YEAR={year} AND MONTH={month}"
         cursor = self.db_conn.cursor().execute(sql_select)
@@ -36,7 +48,7 @@ class DTO:
         if result > 0:
             return
         else:
-            sql_insert = f"INSERT INTO TIME (ID_TIME, YEAR, MONTH) VALUES (SEQ_TIME.nextval, {year}, {month})"
+            sql_insert = f"INSERT INTO TIME VALUES (SEQ_TIME.nextval, {year}, {month})"
             self.db_conn.cursor().execute(sql_insert)
             self.db_conn.commit()
 
